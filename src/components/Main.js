@@ -22,11 +22,11 @@ function Main(props) {
                 <div className="profile__info">
                     <h1 className="profile__name">{currentUser.name}</h1>
                     <button className="profile__edit-button" type="button" aria-label="изменить профайл"
-                            onClick={onEditProfile}></button>
+                            onClick={onEditProfile}/>
                     <p className="profile__about">{currentUser.about}</p>
                 </div>
                 <button className="profile__add-button" type="button" aria-label="добавить карточку"
-                        onClick={onAddPlace}></button>
+                        onClick={onAddPlace}/>
             </section>
             <ul className="cards">
                 {cards.map(card => (

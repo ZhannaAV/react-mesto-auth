@@ -1,0 +1,6 @@
+.header__button_unlogged{
+	color: #FFF;
+}
+.header__button_unlogged:hover{
+	opacity: .6;
+}

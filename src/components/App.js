@@ -13,12 +13,15 @@ import SubmitDeletePopup from "./SubmitDeletePopup";
 import Login from "./Login";
 import Register from "./Register";
 import ProtectedRoute from "./ProtectedRoute";
+import {SignContext} from "../contexts/SignContext";
+import InfoTooltip from "./InfoTooltip";
 
 function App() {
     const [isEditAvatarPopupOpen, setAvatarPopupOpen] = React.useState(false)
     const [isEditProfilePopupOpen, setProfilePopupOpen] = React.useState(false)
     const [isAddPlacePopupOpen, setPlacePopupOpen] = React.useState(false)
     const [isSubmitPopupOpen, setSubmitPopupOpen] = React.useState(false)
+    const [isInfoTooltipOpen, setInfoTooltipOpen] = React.useState(false)
     const [selectedCard, setSelectedCard] = React.useState(null)
     const [cardForDelete, setCardForDelete] = React.useState(null)
     const [currentUser, setCurrentUser] = React.useState({})
@@ -36,8 +39,8 @@ function App() {
             .catch((err) => console.log(err))
     }, [])
 
-    function handleLogged() {
-        setLoggedIn(true)
+    function handleLogged(res) {
+        setLoggedIn(res)
     }
 
     function handleCardClick(card) {
@@ -56,12 +59,17 @@ function App() {
         setPlacePopupOpen(true)
     }
 
+    function submitInfoTooltip() {
+        setInfoTooltipOpen(true)
+    }
+
     function closeAllPopups() {
         setAvatarPopupOpen(false)
         setProfilePopupOpen(false)
         setPlacePopupOpen(false)
         setSubmitPopupOpen(false)
         setSelectedCard(null)
+        setInfoTooltipOpen(false)
     }
 
     function handleUpdateUser({name, about}) {
@@ -85,8 +93,6 @@ function App() {
             })
             .catch((err) => console.log(err))
             .finally(() => setIsLoad(false))
-
-
     }
 
     //обновляет стейт карточек после полож. ответа api об изм лайка
@@ -130,50 +136,54 @@ function App() {
     }
 
     return (
-        <CurrentUserContext.Provider value={currentUser}>
-            <div className="App">
-                <div className="page__container">
-                    <Header loggedIn={loggedIn}/>
-                    <Switch>
-                        <Route path='/sign-in'>
-                            <Login/>
-                        </Route>
+        <SignContext.Provider value={{loggedIn, handleLogged}}>
+            <CurrentUserContext.Provider value={currentUser}>
+                <div className="App">
+                    <div className="page__container">
+                        <Header/>
+                        <Switch>
+                            <Route path='/sign-in'>
+                                <Login/>
+                            </Route>
 
-                        <Route path='/sign-up'>
-                            <Register/>
-                        </Route>
+                            <Route path='/sign-up'>
+                                <Register onOpenTooltip={submitInfoTooltip}/>
+                            </Route>
 
-                        <Route exact path='/'>
-                            <ProtectedRoute component={Main} loggedIn={loggedIn} onEditAvatar={handleEditAvatarClick}
-                                            onEditProfile={handleEditProfileClick}
-                                            onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick}
-                                            onCardLike={handleCardLike}
-                                            onCardDelete={handleCardDeleteChoice} cards={cards}/>
-                        </Route>
-                    </Switch>
-                    <Footer/>
+                            <Route exact path='/'>
+                                <ProtectedRoute component={Main} loggedIn={loggedIn}
+                                                onEditAvatar={handleEditAvatarClick}
+                                                onEditProfile={handleEditProfileClick}
+                                                onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick}
+                                                onCardLike={handleCardLike}
+                                                onCardDelete={handleCardDeleteChoice} cards={cards}/>
+                            </Route>
+                        </Switch>
+                        {loggedIn && <Footer/>}
 
-                    {/*попап редактирования аватара*/}
-                    <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}
-                                     onUpdateAvatar={handleUpdateAvatar} btnText={loadTextBtn}/>
+                        {/*попап редактирования аватара*/}
+                        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}
+                                         onUpdateAvatar={handleUpdateAvatar} btnText={loadTextBtn}/>
 
-                    {/*попап редактирования профайла*/}
-                    <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}
-                                      onUpdateUser={handleUpdateUser} btnText={loadTextBtn}/>
+                        {/*попап редактирования профайла*/}
+                        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}
+                                          onUpdateUser={handleUpdateUser} btnText={loadTextBtn}/>
 
-                    {/*попап добавления карточек*/}
-                    <AddPlacePopup onAddPlace={handleAddPlaceSubmit} isOpen={isAddPlacePopupOpen}
-                                   onClose={closeAllPopups} btnText={loadTextBtn}/>
+                        {/*попап добавления карточек*/}
+                        <AddPlacePopup onAddPlace={handleAddPlaceSubmit} isOpen={isAddPlacePopupOpen}
+                                       onClose={closeAllPopups} btnText={loadTextBtn}/>
 
-                    {/*попап с картинкой*/}
-                    <ImagePopup onClose={closeAllPopups} card={selectedCard}/>
+                        {/*попап с картинкой*/}
+                        <ImagePopup onClose={closeAllPopups} card={selectedCard}/>
 
-                    {/*{попап подтверждения}*/}
-                    <SubmitDeletePopup isOpen={isSubmitPopupOpen} onClose={closeAllPopups}
-                                       onCardDelete={handleSubmitDeleteCard} btnText={'Да'}/>
+                        {/*{попап подтверждения}*/}
+                        <SubmitDeletePopup isOpen={isSubmitPopupOpen} onClose={closeAllPopups}
+                                           onCardDelete={handleSubmitDeleteCard} btnText={'Да'}/>
+                        <InfoTooltip isOpen={isInfoTooltipOpen} onClose={closeAllPopups}/>
+                    </div>
                 </div>
-            </div>
-        </CurrentUserContext.Provider>
+            </CurrentUserContext.Provider>
+        </SignContext.Provider>
     )
 }
 
