@@ -28,12 +28,15 @@ class Login extends React.Component {
         const {email, password} = this.state;
         auth.authorize(email, password)
             .then((res) => {
-                localStorage.setItem('user', email)
-                localStorage.setItem('token',res.token);
-                this.context.handleLogged(true)
+                this.context.setEmailSign(email)
+                localStorage.setItem('token', res.token);
+                this.context.setLoggedIn(true)
                 this.props.history.push('/');
             })
-            .catch((err) => console.log(err))
+            .catch((err) => {
+                this.props.showTooltip(false) //удобно для юзера видеть сообщение о неудаче и здесь
+                console.log(err)
+            })
     }
 
     render() {

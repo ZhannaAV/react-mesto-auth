@@ -24,11 +24,14 @@ class Register extends React.Component {
         e.preventDefault();
         const {email, password} = this.state;
         auth.register(email, password)
-            .then((res) => {
-                console.log(res)
-                this.props.history.push('/sign-in');
+            .then(() => {
+                this.props.showTooltip(true) //открываем попап InfoTooltip
+                this.props.history.push('/sign-in')
             })
-            .catch((err) => console.log(err))
+            .catch((err) => {
+                this.props.showTooltip(false)//открываем попап InfoTooltip
+                console.log(err)
+            })
     }
 
     render() {

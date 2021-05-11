@@ -29,15 +29,15 @@ function Card(props) {
     return (
         <li className="card">
             <div className="card__image" onClick={handleClick}
-                 style={{backgroundImage: `url(${card.link})`}}></div>
+                 style={{backgroundImage: `url(${card.link})`}}/>
             <div className="card__caption">
                 <h2 className="card__title">{card.name}</h2>
                 <div className="card__like-group">
-                    <button className={cardLikeBtnClassName} type="button" aria-label="поставить лайк" onClick={handleLikeClick}></button>
+                    <button className={cardLikeBtnClassName} type="button" aria-label="поставить лайк" onClick={handleLikeClick}/>
                     <p className="card__like-counter">{card.likes.length}</p>
                 </div>
             </div>
-            <button className={cardDeleteBtnClassName} type="button" aria-label="удалить карточку" onClick={handleDeleteClick}></button>
+            <button className={cardDeleteBtnClassName} type="button" aria-label="удалить карточку" onClick={handleDeleteClick}/>
         </li>
     )
 }

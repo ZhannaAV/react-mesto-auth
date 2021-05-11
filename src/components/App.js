@@ -1,5 +1,5 @@
 import React from 'react'
-import {Route, Switch} from 'react-router-dom'
+import {Route, Switch, useHistory} from 'react-router-dom'
 import Header from './Header'
 import Footer from './Footer'
 import Main from './Main'
@@ -15,6 +15,7 @@ import Register from "./Register";
 import ProtectedRoute from "./ProtectedRoute";
 import {SignContext} from "../contexts/SignContext";
 import InfoTooltip from "./InfoTooltip";
+import * as auth from "../utils/auth"
 
 function App() {
     const [isEditAvatarPopupOpen, setAvatarPopupOpen] = React.useState(false)
@@ -27,8 +28,23 @@ function App() {
     const [currentUser, setCurrentUser] = React.useState({})
     const [cards, setCards] = React.useState([])
     const [isLoad, setIsLoad] = React.useState(false)
-    const [loggedIn, setLoggedIn] = React.useState(false)
+    const [loggedIn, setLoggedIn] = React.useState(false)//статус авторизации
+    const [isSignUp, setSignUp] = React.useState(false)//статус регистрации
     let loadTextBtn = isLoad ? 'Сохранение..' : 'Сохранить'
+    const [emailSign, setEmailSign] = React.useState('')//для почты в хедер
+    const history = useHistory()
+
+    function tokenCheck() {
+        const token = localStorage.getItem('token')
+        if (token) {
+            auth.getContent(token)
+                .then(res => {
+                    setLoggedIn(true)
+                    setEmailSign(res.data.email)
+                    history.push('/')
+                })
+        }
+    }
 
     React.useEffect(() => {
         Promise.all([api.getInitialProfile(), api.getInitialCards()])
@@ -37,11 +53,9 @@ function App() {
                 setCards(cards)
             })
             .catch((err) => console.log(err))
+        tokenCheck()
     }, [])
 
-    function handleLogged(res) {
-        setLoggedIn(res)
-    }
 
     function handleCardClick(card) {
         setSelectedCard(card)
@@ -59,8 +73,9 @@ function App() {
         setPlacePopupOpen(true)
     }
 
-    function submitInfoTooltip() {
+    function showInfoTooltip(status) {
         setInfoTooltipOpen(true)
+        setSignUp(status)
     }
 
     function closeAllPopups() {
@@ -136,18 +151,18 @@ function App() {
     }
 
     return (
-        <SignContext.Provider value={{loggedIn, handleLogged}}>
+        <SignContext.Provider value={{loggedIn, setLoggedIn, emailSign, setEmailSign}}>
             <CurrentUserContext.Provider value={currentUser}>
                 <div className="App">
                     <div className="page__container">
                         <Header/>
                         <Switch>
                             <Route path='/sign-in'>
-                                <Login/>
+                                <Login showTooltip={showInfoTooltip}/>
                             </Route>
 
                             <Route path='/sign-up'>
-                                <Register onOpenTooltip={submitInfoTooltip}/>
+                                <Register showTooltip={showInfoTooltip}/>
                             </Route>
 
                             <Route exact path='/'>
@@ -179,7 +194,7 @@ function App() {
                         {/*{попап подтверждения}*/}
                         <SubmitDeletePopup isOpen={isSubmitPopupOpen} onClose={closeAllPopups}
                                            onCardDelete={handleSubmitDeleteCard} btnText={'Да'}/>
-                        <InfoTooltip isOpen={isInfoTooltipOpen} onClose={closeAllPopups}/>
+                        <InfoTooltip isOpen={isInfoTooltipOpen} status={isSignUp} onClose={closeAllPopups}/>
                     </div>
                 </div>
             </CurrentUserContext.Provider>
