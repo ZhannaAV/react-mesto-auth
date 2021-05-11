@@ -1,4 +1,15 @@
 .header__sign-block{
-	margin-top: 51px;
 	display: flex;
 }
+
+@media screen and (max-width: 900px) {
+	.header__sign-block{
+		margin-right: 30px;
+	}
+}
+
+/*@media screen and (max-width: 425px) {*/
+/*	.header__sign-block{*/
+/*		display: none;*/
+/*	}*/
+/*}*/
