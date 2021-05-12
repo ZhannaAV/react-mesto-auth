@@ -8,8 +8,5 @@
 	border: none;
 	padding: 0;
 	height: fit-content;
-}
-
-@media screen and (max-width: 425px) {
-
+	cursor: pointer;
 }

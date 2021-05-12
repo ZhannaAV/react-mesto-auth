@@ -9,3 +9,11 @@
 	opacity: 0.85;
 	cursor: pointer
 }
+
+@media screen and (max-width: 425px) {
+	.sign__button{
+		height: 46px;
+		font-size: 16px;
+		line-height: 19px;
+	}
+}

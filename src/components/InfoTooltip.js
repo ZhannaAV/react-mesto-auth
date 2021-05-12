@@ -9,8 +9,9 @@ function InfoTooltip(props) {
         <div className={`popup ${isOpen && 'popup_opened'}`}>
             <div className="popup__window">
                 <img className="popup__icon" src={status ? okIcon : notOkIcon} alt="галочка"/>
-                <h2 className="popup__title">{status ? "Вы успешно зарегистрировались" : "Что-то пошло не так!Попробуйте ещё раз."}</h2>
-                <button onClick={onClose} className="popup__close" type="button"
+                <h2 className="popup__title popup__title_for_tooltip">{status ? "Вы успешно зарегистрировались" : "Что-то пошло не" +
+                    " так!Попробуйте ещё раз."}</h2>
+                <button onClick={onClose} className="popup__close popup__close_for_tooltip" type="button"
                         aria-label="закрыть окно"/>
             </div>
         </div>

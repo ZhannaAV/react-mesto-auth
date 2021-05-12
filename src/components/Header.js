@@ -6,6 +6,7 @@ import {SignContext} from "../contexts/SignContext"
 function Header() {
     const logContext = React.useContext(SignContext)
     const {loggedIn, setLoggedIn, emailSign} = logContext
+    const [isBurgerOpen, setIsBurgerOpen] = React.useState(false)
     const {pathname} = useLocation()
     const signSwitch = () => {
         switch (pathname) {
@@ -24,14 +25,39 @@ function Header() {
 
     function handleUnlogged() {
         setLoggedIn(false)
+        handleBurgerMenuClose()
+    }
+
+    function handleBurgerMenuOpen() {
+        setIsBurgerOpen(true)
+    }
+
+    function handleBurgerMenuClose() {
+        setIsBurgerOpen(false)
     }
 
     return (
         <header className="header">
-            <img className="header__logo" src={Logo} alt="Логотип место россия"/>
-            <div className="header__sign-block">
-                {loggedIn && (<p className="header__text">{emailSign}</p>)}
-                {loggedIn && <button className="header__button" onClick={handleUnlogged}>Выйти</button>}
+            <div
+                className={`header__sign-block header__sign-block_type_mobile ${isBurgerOpen && "header__sign-block_opened"}`}>
+                <p className="header__text">{emailSign}</p>
+                <button className="header__button header__button_type_mobile" onClick={handleUnlogged}>Выйти</button>
+            </div>
+            <div className="header__inner">
+                <img className="header__logo" src={Logo} alt="Логотип место россия"/>
+                {loggedIn &&
+                <div className="header__sign-block header__sign-block_type_desktop">
+                    <p className="header__text">{emailSign}</p>
+                    <button className="header__button" onClick={handleUnlogged}>Выйти</button>
+                </div>}
+                {loggedIn &&
+                <>
+                    <button onClick={handleBurgerMenuOpen}
+                            className={`header__btn header__btn_type_burger ${isBurgerOpen && "header__btn_hidden"}`}/>
+                    <button onClick={handleBurgerMenuClose}
+                            className={`header__btn header__btn_type_close ${!isBurgerOpen && "header__btn_hidden"}`}/>
+                </>}
+
                 {!loggedIn &&
                 <Link to={signSwitch().to}>
                     <button className="header__button header__button_unlogged">{signSwitch().title}</button>
