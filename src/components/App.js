@@ -34,6 +34,7 @@ function App() {
     const [emailSign, setEmailSign] = React.useState('')//для почты в хедер
     const history = useHistory()
 
+
     function tokenCheck() {
         const token = localStorage.getItem('token')
         if (token) {
@@ -47,15 +48,15 @@ function App() {
     }
 
     React.useEffect(() => {
-        Promise.all([api.getInitialProfile(), api.getInitialCards()])
-            .then(([userData, cards]) => {
-                setCurrentUser(userData);
-                setCards(cards)
-            })
-            .catch((err) => console.log(err))
-        tokenCheck()
+            Promise.all([api.getInitialProfile(), api.getInitialCards()])
+                .then(([userData, cards]) => {
+                    setCurrentUser(userData);
+                    setCards(cards)
+                })
+                .catch((err) => console.log(err))
+            tokenCheck()
     }, [])
-
+    //если добавить проверку loggedIn и добавить его в dependancy, то не работает загрузка токена их кеша
 
     function handleCardClick(card) {
         setSelectedCard(card)
@@ -147,7 +148,32 @@ function App() {
             })
             .catch((err) => console.log(err))
             .finally(() => setIsLoad(false))
+    }
 
+    function handleRegister(email, password){
+        auth.register(email, password)
+            .then(() => {
+                showInfoTooltip(true) //открываем попап InfoTooltip
+                history.push('/sign-in')
+            })
+            .catch((err) => {
+                showInfoTooltip(false)//открываем попап InfoTooltip
+                console.log(err)
+            })
+    }
+
+    function  handleLogin(email, password){
+        auth.authorize(email, password)
+            .then((res) => {
+                setEmailSign(email)
+                localStorage.setItem('token', res.token);
+                setLoggedIn(true);
+                history.push('/');
+            })
+            .catch((err) => {
+                showInfoTooltip(false) //удобно для юзера видеть сообщение о неудаче и здесь
+                console.log(err)
+            })
     }
 
     return (
@@ -158,11 +184,11 @@ function App() {
                         <Header/>
                         <Switch>
                             <Route path='/sign-in'>
-                                <Login showTooltip={showInfoTooltip}/>
+                                <Login onLogin={handleLogin}/>
                             </Route>
 
                             <Route path='/sign-up'>
-                                <Register showTooltip={showInfoTooltip}/>
+                                <Register onRegister={handleRegister}/>
                             </Route>
 
                             <Route exact path='/'>
@@ -194,7 +220,8 @@ function App() {
                         {/*{попап подтверждения}*/}
                         <SubmitDeletePopup isOpen={isSubmitPopupOpen} onClose={closeAllPopups}
                                            onCardDelete={handleSubmitDeleteCard} btnText={'Да'}/>
-                        <InfoTooltip isOpen={isInfoTooltipOpen} status={isSignUp} onClose={closeAllPopups}/>
+                        <InfoTooltip isOpen={isInfoTooltipOpen} status={isSignUp} onClose={closeAllPopups} message={isSignUp ? "Вы успешно зарегистрировались" : "Что-то пошло не" +
+                            " так!Попробуйте ещё раз."}/>
                     </div>
                 </div>
             </CurrentUserContext.Provider>

@@ -1,6 +1,5 @@
 import React from 'react';
 import {Link, withRouter} from "react-router-dom";
-import * as auth from "../utils/auth"
 
 class Register extends React.Component {
     constructor(props) {
@@ -23,15 +22,7 @@ class Register extends React.Component {
     handleSubmit(e) {
         e.preventDefault();
         const {email, password} = this.state;
-        auth.register(email, password)
-            .then(() => {
-                this.props.showTooltip(true) //открываем попап InfoTooltip
-                this.props.history.push('/sign-in')
-            })
-            .catch((err) => {
-                this.props.showTooltip(false)//открываем попап InfoTooltip
-                console.log(err)
-            })
+        this.props.onRegister(email, password)
     }
 
     render() {
